@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-from backend.app.config import DATABASE_URL
+from app.config import DATABASE_URL
 
 engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
 
