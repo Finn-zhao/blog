@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+/* 下划线式输入框（poetize 风格） */
+.auth-input {
+  @apply w-full border-0 border-b border-slate-300 bg-transparent px-1 py-2.5
+    text-[15px] text-slate-800 outline-none transition-colors
+    placeholder:text-slate-400 focus:border-sky-500;
+}
+
+.auth-label {
+  @apply mb-1 block text-xs font-medium text-slate-500;
+}
