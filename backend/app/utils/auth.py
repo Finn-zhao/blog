@@ -30,5 +30,5 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="无效的令牌")
 
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+def get_token_claims(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     return decode_token(credentials.credentials)
