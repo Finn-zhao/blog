@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
-
 from app.database import engine, init_db
 from app.config import CORS_ORIGINS
 from app.api import api_router
@@ -12,10 +11,7 @@ async def lifespan(app: FastAPI):
     init_db()
     yield
 
-app = FastAPI(
-    title="个人博客 API",
-    version="1.0.0",
-)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,7 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # 一行挂载所有 API 路由
 app.include_router(api_router)
