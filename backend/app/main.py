@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
+import fastapi_cdn_host
+
 
 from app.database import engine, init_db
 from app.config import CORS_ORIGINS
@@ -11,7 +13,13 @@ async def lifespan(app: FastAPI):
     init_db()
     yield
 
-app = FastAPI()
+app = FastAPI(
+    title="blog",
+    version="0.0.1",
+    lifespan=lifespan,
+)
+
+fastapi_cdn_host.patch_docs(app) # 自动替换为可访问的资源
 
 app.add_middleware(
     CORSMiddleware,
