@@ -127,6 +127,12 @@ def update_me(
     if data.nickname is not None:
         db_user.nickname = data.nickname
     if data.email is not None:
+        # 检查新邮箱是否已被其他用户占用
+        existing = session.exec(
+            select(User).where(User.email == data.email)
+        ).first()
+        if existing and existing.id != db_user.id:
+            raise HTTPException(status_code=409, detail="邮箱已被注册")
         db_user.email = data.email
     if data.bio is not None:
         db_user.bio = data.bio
