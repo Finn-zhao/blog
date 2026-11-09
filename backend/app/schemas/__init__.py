@@ -1,5 +1,7 @@
-from app.schemas.auth import Token, LoginRequest
+from app.schemas.auth import RegisterInput, LoginRequest, UpdateUserInput
 
 __all__ = [
-    "Token", "LoginRequest",
+    "RegisterInput",
+    "LoginRequest",
+    "UpdateUserInput",
 ]
