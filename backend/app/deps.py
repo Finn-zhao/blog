@@ -5,41 +5,36 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 from app.models.user import User
 
-# 1. 游客也能用，没 token 就返回 None
-def get_optional_user(
-    session: Session = Depends(get_session),
-    credentials: HTTPAuthorizationCredentials | None = Depends(
-        HTTPBearer(auto_error=False)
-    ),
-) -> User | None:
+bearer_optional = HTTPBearer(auto_error=False)
+
+
+def _resolve_user(session: Session, credentials: HTTPAuthorizationCredentials | None) -> User:
+
     if credentials is None:
-        return None
-    try:
-        claims = decode_token(credentials.credentials)
-    except Exception:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "无效 Token")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "未提供认证凭据")
+
+    claims = decode_token(credentials.credentials)
     username = claims.get("sub")
     user = session.exec(select(User).where(User.username == username)).first()
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "用户不存在")
     return user
 
+# 1. 游客也能用，没 token 就返回 None
+def get_optional_user(
+    session: Session = Depends(get_session),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_optional),
+) -> User | None:
+    if credentials is None:
+        return None
+    return _resolve_user(session, credentials)
 
 # 2. 必须登录（普通用户 + 管理员都能用）
 def get_current_user(
     session: Session = Depends(get_session),
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_optional),
 ) -> User:
-    try:
-        claims = decode_token(credentials.credentials)
-    except Exception:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "无效 Token")
-    username = claims.get("sub")
-    user = session.exec(select(User).where(User.username == username)).first()
-    if not user:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "用户不存在")
-    return user
-
+    return _resolve_user(session, credentials)
 
 # 3. 必须管理员
 def get_current_admin(user: User = Depends(get_current_user)) -> User:
@@ -47,5 +42,4 @@ def get_current_admin(user: User = Depends(get_current_user)) -> User:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "需要管理员权限")
     return user
 
-
-__all__ = ["get_optional_user", "get_current_user", "get_current_admin"]
+__all__ = ["get_session", "get_optional_user", "get_current_user", "get_current_admin"]

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-from app.deps import get_session, get_current_user
+from app.database import get_session
+from app.deps import get_current_user
 from app.models import User
 from app.schemas import RegisterInput, LoginRequest, UpdateUserInput
 from app.services import register_user, login_user, get_user_info, update_user_info

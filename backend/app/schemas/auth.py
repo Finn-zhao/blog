@@ -24,6 +24,6 @@ class LoginRequest(BaseModel):
 class UpdateUserInput(BaseModel):
     """用户信息更新白名单模型，防止字段注入提权"""
     nickname: str | None = Field(default=None, max_length=50)
-    email: str | None = Field(default=None, max_length=100)
+    email: EmailStr | None = Field(default=None)
     bio: str | None = Field(default=None, max_length=500)
     avatar: str | None = Field(default=None, max_length=500)
